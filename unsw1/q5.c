@@ -2,17 +2,17 @@
 
 int main(int argc, const char *argv[])
 {
-    int n;
-    int m;
+    long long n;
+    long long m;
     int col[100001] = {0};
     int row[100001] = {0};
 
-    scanf("%d %d", &n, &m);
-    long ac = n, ar = n;
+    scanf("%lld %lld", &n, &m);
+    long long ac = n, ar = n;
     int i;
     for (i = 0; i < m; i++){
-        int c, r;
-        scanf("%d %d", &c, &r);
+        long long c, r;
+        scanf("%lld %lld", &c, &r);
         if (!col[c]){
             /** printf("new col\n"); */
             col[c] = 1;
@@ -25,7 +25,7 @@ int main(int argc, const char *argv[])
             ar--;
         }
         /** printf("ac %ld ar %ld\n", ac, ar); */
-        printf("%ld ", ac * ar);
+        printf("%lld ", ac * ar);
         /** printf("\n"); */
     }
     return 0;
