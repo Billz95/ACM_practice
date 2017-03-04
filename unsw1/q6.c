@@ -60,7 +60,7 @@ int main()
         }
     }
 
-    printf("%lld", overall);
+    printf("%lld\n", overall);
 
 
     return 0;
