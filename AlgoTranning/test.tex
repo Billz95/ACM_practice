@@ -1,0 +1,252 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{mathtools}
+\usepackage{minted}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+\title{COMP3821 Assignment4}
+\begin{document}
+\begin{LARGE}
+  \begin{center}
+
+    COMP3121
+
+    Assignment 4
+
+    A17S1N4
+
+    ----------------------------------------
+
+    Zhu Sijun
+
+    z5130887
+
+    ----------------------------------------
+
+    By submitting this document you are confirming that all the answers are your work and are not take from any other sources unless clearly mentioned.
+
+  \end{center}
+\end{LARGE}
+
+\textbf{Question 1:}
+
+\begin{enumerate}
+\item Sort a set of elephants with size $n$ by their weights in decreasing order to a sequence $Q _{ 1 .. n}$.
+  For each $1\leq i \leq n$ we solve the following sub-problems:
+
+  \textbf{\textit{Find a subsequence of the sequence $Q_{1 ..i}$ of maximum length in which the values are strictly increasing and which ends with $Q_i$.}}
+
+\item create an Array $A$ to store the size of longest increasing IQ sequence end with $Q_i$.
+\item  Let $A_1 \leftarrow [Q_1]$. (Base case)
+\item For $i$ from 2 to n:
+  \begin{enumerate}
+  \item Find entries $A_k$ in A such that $1 \leq k \leq i$ and $IQ(Q_k) < IQ(Q_i)$
+  \item Find the $A_k$ with the largest size (i.e. $\| A_k \|$ is maximum)
+  \item $A_i = A_k\texttt{.append}(Q_i)$, so that $A_i$ is the longest increasing IQ sequence ends with $Q_i$
+    % \item $A[i] = \texttt{max} \{A_k: 1\leq k < i , IQ(Q_k) > IQ(Q_i)\} + 1$
+  \end{enumerate}
+\item return the largest size entry $A_m$ in A.
+\end{enumerate}
+
+
+
+Then we would be able to obtain the longest increasing IQ but decreasing weight sequence of elephants. Complexity of algorithm would be $O(n^2)$, as sorting is $O(n\log n)$ and when in the loop, each time it checks every entry before $A_i$ and in total loops n times, therefore complexity is $O(n^2)$ which is the dominant factor. And this algorithm is guaranteed to find optimal solution as solution has to end with one of element in $Q$ and by our algorithm the return sequence is the longest increasing IQ decreasing weight sequence end with that element.\pagebreak
+
+\textbf{Question 2:\newline}
+Denote the positions of cuts (including two ends) using sequence $X = (x_1, x_2, x_3 ... x_n)$. Denote minimum cost of obtaining rod from $a$ to $b$ be $Opt(a,b)$
+
+We then reduce the problem to $$Opt(a,b) =(x_b - x_a) + min(Opt(a, i) + Opt(i, b))$$ for i from $a+1$ to $b-1$\newline
+\textbf{Algorithm:}\newline
+Firstly, create an 2D array $O$ to store all the optimal solutions, let $O[i][j]$ denote the optimal solution of obtaining rod from $x_i$ to $x_j$. And initialize all entries in the matrix to \texttt{UNKNOWN}.\newline
+
+get\_cost(i (default = 1), j (default = n)):
+\begin{enumerate}
+\item if $O[i][j] \neq \texttt{UNKNOWN}$, return $O[i][j]$ ( when value is known, just return ).
+\item if $j - i \leq 1$, return 0. ( no cuts in between the rod, hence no cost occurred )
+\item cost $ \leftarrow (x_j - x_i) + min\{get\_cost(i, k) + get\_cost(k, j)\}$ for $k$ from $i+1$ to $j-1$.
+\item $O[i][j] \leftarrow $ cost
+\item return cost
+\end{enumerate}
+
+This clearly finds an optimal solution as we tried all the possible first cut for the whole rod, then we do the same thing for the rest of the rod. And values that are already calculated are stored into the array for the future use which makes it efficient.
+
+\textbf{Question 3:}
+
+Let the string be $A$ with length n, and subsequence be $B$ with length m. Denote $O(A[i .. n], B[j .. m])$ to be the number of distinct subsequence $B[j .. m]$ in $A[i .. n]$.
+
+Then we can find the solution by solving $$ O(A[1 .. n], B[1 .. m]) = O(A[2 .. n], B[2 .. m]) + O(A[2 .. n], B[1 .. m])$$
+
+This means for each match in letter, we can either take that letter to find the number of distinct subsequence with string left for both string, or do not take this letter and find whole string B in the rest of string A to get distinct subsequence. The result is the sum of both.
+
+
+Algorithm:
+
+Create a 2D array $Opt$ to store the optimal solutions. Let $Opt[i][j]$ to represent $O(A[i .. n], B[j .. m])$. And initialize entries in the array to \texttt{UNKNOWN}.\pagebreak
+
+\texttt{get\_numbers(i (default = 1), j (default = 1)):}
+\begin{enumerate}
+\item if $Opt[i][j] \neq \texttt{UNKNOWN}$, return $Opt[i][j]$ ( when value is known, just return ).
+\item If $A[i] = B[j]$ ( If they are of the same letter )
+
+  \begin{itemize}
+
+  \item if $m=j$ ( When the needle has reached the end )
+
+    \begin{itemize}
+    \item then $Opt[i][j] = 1$
+    \item return 1
+    \end{itemize}
+
+  \item else if $i=n$
+
+    \begin{itemize}
+    \item then $Opt[i][j] = 0$ ( When the source is reached the end while the needle is not )
+    \item return 0
+    \end{itemize}
+
+  \item else ( When none of them reach the end )
+
+    \begin{itemize}
+    \item then $Opt[i][j] =\texttt{get\_numbers([i+1][j+1])} + \texttt{get\_numbers([i+1][j])}$
+    \item return $Opt[i][j]$
+    \end{itemize}
+
+  \end{itemize}
+
+\item Else ( When A[i] and B[j] are different )
+
+
+  \begin{itemize}
+
+  \item if $i=n$
+
+    \begin{itemize}
+    \item then $Opt[i][j] = 0$
+    \item return 0
+    \end{itemize}
+
+  \item else
+
+    \begin{itemize}
+    \item then $Opt[i][j] = \texttt{get\_numbers([i+1][j]}$ (Since you can't match, you just skip this letter to find rest)
+    \item return $Opt[i][j]$
+    \end{itemize}
+
+  \end{itemize}
+
+\end{enumerate}
+
+
+\textbf{Question 4:}\newline
+
+By observation, we can see if we take a node in the hierarchy, then we can only consider its grand-node, while not taking this node will allow us to consider all its child node. Let's use $O(n)$ to denote the maximum sum of fun rating on a tree with root n. And denote fun rating of node n with \texttt{fun(n)}.
+
+We can then have a simple recursion. $$O(n) = max\{\texttt{fun(n)}+ O(i) \text{ where i is all n's grand-child},  O(j) \text{ where j is all child of n}\}$$\pagebreak
+
+Algorithm:
+
+We create an array $O$ to store the maximum fun rating. Initialize array's entries to \texttt{UNKNOWN}.\newline
+
+\texttt{get\_max\_fun(n)}
+\begin{enumerate}
+\item If $O(n) \neq $\texttt{ UNKNOWN}, return $O(n)$.
+\item If n is a leaf, $O(n) = max\{\texttt{fun(n)}, 0\}$ and return O(n)
+\item O(n) = max\{\texttt{fun(n)}+ \texttt{get\_max\_fun(n)} where i is all n's grand-child,  \texttt{get\_max\_fun(j)} where j is all child of n\}
+\item We label node n [attending/ not attending] depending on the choice of value in the previous step
+\item return O(n)
+\end{enumerate}
+
+And finally we return a list of employee who have 'attend' label on them.
+
+This would give us an optimal fun rating as tried all combination of including or excluding a certain node. And it used dynamic programming by storing the calculated fun rating of a tree started with node but not necessarily including node n.\newline
+
+
+\textbf{Question 5:}\newline
+
+Since Z's size is exactly the sum of sizes of X and Y, hence a letter in $Z$ must either belong to $X$ or $Y$ if Z is a interleave of X and Y. Hence we can check both possibilities. If one of them is True, then we return True, as all the previous labelling on Z's bit is either X or Y.
+
+We use $O(i, j)$ to store the boolean value of whether $Z[1 .. i+j]$ is a interleave of $X[1 .. i]$ and $Y[1 .. j]$.
+% Then when we can determine its value with $$O(i,j) = O(i-1, j) \text{ or } O(i, j-1)$$
+
+Algorithm:\newline
+Create a 2D array $S$ where $S[i][j]$ represent $O(i, j)$. Firstly initialize all the entries to \texttt{UNKNOWN}.\newline
+
+\textbf{Bottom to top method:}
+\begin{enumerate}
+\item For i from 0 to n
+  \begin{enumerate}
+  \item For j from 0 to m
+    \begin{enumerate}
+    \item If i = j = 0, S[i][j] = True
+    \item Else if j = 0 and Z[i+j] = X[i], then S[i][j] = S[i-1][j]
+    \item Else if i = 0 and Z[i+j] = Y[j], then S[i][j] = S[i][j-1]
+    \item Else if X[i] = Z[i+j] , then S[i][j] = S[i-1][j]
+    \item Else if Y[j] = Z[i+j] , then S[i][j] = S[i][j-1]
+    \item Else S[i][j] = False
+    \end{enumerate}
+  \end{enumerate}
+\item Return S[n][m].
+\end{enumerate}
+
+In this way we build 2D array from corner to top row and then left col and then fill in the middle. Each entry in the middle is dependent on its top and left entry, as well as its letter compare with Z's current letter which is Z[i+j].\newline
+
+
+\textbf{Top-down method:}\newline
+check(i, j):
+\begin{enumerate}
+\item If $S[i][j] \neq$ \texttt{UNKNOWN}, return $S[i][j]$. (return when it is already known)
+\item If i = 0 and j = 0, S[i][j] = True and return True.
+
+\item If X[i] = Z[i+j]
+  \begin{itemize}
+  \item Then If \texttt{check(i-1, j)} is True,
+    \begin{itemize}
+    \item Then $S[i][j]$ = True and then return True
+    \end{itemize}
+  \end{itemize}
+
+\item If Y[j] = Z[i+j]
+  \begin{itemize}
+  \item Then If \texttt{check(i, j-1)} is True,
+    \begin{itemize}
+    \item Then $S[i][j]$ = True and then return True
+    \end{itemize}
+  \end{itemize}
+
+\item Since Z[i+j] equal to neither X[i] or Y[j], hence, S[i][j] is False and then return False
+\end{enumerate}
+
+\textbf{Question 6:\newline}
+
+Denote strength of turtle $i$ with s(i) and weight of it is w(i). Sort turtles with increasing order according to their sum of weight and strength and call it sequence T[1 .. n].\newline
+
+\textbf{Claim: There must be a final optimal solution that is with this ordering from top to bottom}\newline
+
+To show this order works, let's assume there's optimal highest tower with a turtle T[i+1] with less sum of weight and strength is on the bottom of a turtle T[i] with higher sum of weight and strength. To show our solution is also optimal, lets swap them into our ordering.
+
+Let the total weight on top of turtle T[i] be A, which implies $A \leq s(i)$ so that it is not cracking. Also $A + w(i) \leq s(i+1)$ so that the bottom turtle does not crack. After swapping, turtle i+1 is not going to crack since the weight on it is decreased, hence we only need to care about the condition of turtle i. After swapping, the weight on turtle i is now $A + w(i+1)$, we need to show it is less or equal to $s(i)$.
+
+As we know $A + w(i) \leq s(i+1)$, hence $A + w(i) + w(i+1) \leq s(i+1) + w(i+1)$ which by our definition it is less or equal to $ s(i) + w(i)$. Hence remove $w(i+1)$ from both side, we get $A + w(i+1) \leq s(i)$ which shows turtle i will not crack after swap.
+
+
+\textbf{Sub-problem P(i)}: In the sequence T[1 .. i] where $i \leq n$, for each height h that $h\leq i$, find the lightest tower of height h that can be built.
+
+We use an 2D array $O$ to store the solution to the sub-problem of P(i), where O[i][h] represent the minimum weight of tower can be built from first to $i^{th}$ turtle, and it is of height h.
+
+We gradually solve this problem until we can't find find any possible turtle tower at a certain height h with i equal to n (all turtles were considered), then our optimal answer for height (h-1).\newline
+
+\textbf{Algorithm}:
+
+\begin{enumerate}
+\item For i range from 1 to n
+  \begin{enumerate}
+  \item for height h from 1 to i
+    \begin{enumerate}
+    \item find the tower with height h with the lowest weight, following the order of turtle with increasing sum of weight and strength.
+    \item  We extend array with O[i][h] = min( O[k][h-1] where $k < i$ and O[k] $\leq$ s(i), O[k][h] where $k < i$)
+    \end{enumerate}
+  \end{enumerate}
+
+\item Find the maximum height available in O and return the tower
+\end{enumerate}
+\end{document}
